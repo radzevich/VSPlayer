@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VSPlayer", "VSPlayer.vcxproj", "{CFA54ADD-FDA5-3D60-93CF-30CB5E3E75F6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CFA54ADD-FDA5-3D60-93CF-30CB5E3E75F6}.Debug|x64.ActiveCfg = Debug|x64
+		{CFA54ADD-FDA5-3D60-93CF-30CB5E3E75F6}.Debug|x64.Build.0 = Debug|x64
+		{CFA54ADD-FDA5-3D60-93CF-30CB5E3E75F6}.Release|x64.ActiveCfg = Release|x64
+		{CFA54ADD-FDA5-3D60-93CF-30CB5E3E75F6}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3C4375D2-7B4F-4742-B49A-396A5FF23FB2}
+	EndGlobalSection
+EndGlobal
