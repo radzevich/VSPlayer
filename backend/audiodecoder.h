@@ -5,12 +5,6 @@
 #include <QAudioDecoder>
 #include <QAudioDeviceInfo>
 
-struct AudioSamples
-{
-    uint samplesCount;
-    const quint16* buffer;
-};
-
 class AudioDecoder : public QObject
 {
     Q_OBJECT
@@ -20,20 +14,15 @@ public:
     virtual ~AudioDecoder();
 
     void AudioDecoder::decode(const QString &filePath, const QAudioFormat &audioFormat);
+    void AudioDecoder::decodeAsync(const QString &filePath, const QAudioFormat &audioFormat);
 
 signals:
     void decoded(QByteArray &audioBuffer);
 
-private slots:
-    void onAudioBufferReady();
-    void onDecodingFinished();
-    void onError(QAudioDecoder::Error errorCode);
-
 private:
-    QAudioDecoder *_audioDecoder = nullptr;
     QByteArray *_audioBuffer = nullptr;
-    QAudioDeviceInfo *_device = nullptr;
 
+    void onDecodingFinished();
     void releaseAudioBuffer();
 };
 

@@ -1,18 +1,17 @@
 #include "audiodecoder.h"
 #include "exceptions/audiodecoderexception.h"
+#include "backend/utilities/helpers/wavfilereader.h"
+#include "backend/models/wavfile.h"
 
 #include <QAudioDeviceInfo>
 #include <QAudioOutput>
+#include <QtConcurrent>
+
+using namespace std;
 
 AudioDecoder::AudioDecoder(QObject* pobj) : QObject(pobj)
 {
-    _audioDecoder = new QAudioDecoder(this);
     _audioBuffer = new QByteArray();
-    _device = &QAudioDeviceInfo::defaultOutputDevice();
-
-    connect(_audioDecoder, SIGNAL(bufferReady()), this, SLOT(onAudioBufferReady()));
-    connect(_audioDecoder, SIGNAL(finished()), this, SLOT(onDecodingFinished()));
-    connect(_audioDecoder, SIGNAL(error(QAudioDecoder::Error)), this, SLOT(onError(QAudioDecoder::Error)));
 }
 
 AudioDecoder::~AudioDecoder()
@@ -23,33 +22,43 @@ void AudioDecoder::decode(const QString &filePath, const QAudioFormat &audioForm
 {
     releaseAudioBuffer();
 
-   // _audioDecoder->setAudioFormat(audioFormat);
-    _audioDecoder->setSourceFilename(filePath);
-    _audioDecoder->start();
+    QProcess process;
+    process.setStandardErrorFile("logs/ffmpeg/errors.txt");
+    process.setStandardOutputFile("logs/ffmpeg/outputs.txt");
+    process.start("ffmpeg", QStringList() << "-i" << filePath << "-vn" << "soundfile.wav");
+    process.waitForFinished();
+
+    QProcess::ExitStatus exitStatus = process.exitStatus();
+
+    process.kill();
+
+    if (exitStatus == QProcess::Crashed)
+    {
+        qDebug() << "Error converting video to .wav file";
+        return;
+    }
+
+    WavFileReader wavFileReader(this);
+
+    const WavFile *wavFile = wavFileReader.readFile("soundfile.wav");
+    if (!wavFile->isValid()) {
+        qDebug("soundfile.wav is not valid");
+        return;
+    }
+
+    _audioBuffer = wavFile->getAudioBuffer();
+    onDecodingFinished();
 }
 
-void AudioDecoder::onAudioBufferReady()
+void AudioDecoder::decodeAsync(const QString &filePath, const QAudioFormat &audioFormat)
 {
-    if (_audioDecoder->bufferAvailable()) {
-        QAudioBuffer audioBuffer = _audioDecoder->read();
-        qDebug() << "Sample count: " << audioBuffer.sampleCount();
-        qDebug() << "Byte count:" << audioBuffer.sampleCount();
-        _audioBuffer->append(audioBuffer.constData<char>());
-    } else {
-        throw new AudioDecoderException();
-    }
+//    QFuture<void> future = QtConcurrent::run(this, &decode, filePath, audioFormat);
+    decode(filePath, audioFormat);
 }
 
 void AudioDecoder::onDecodingFinished()
 {
     emit decoded(*_audioBuffer);
-}
-
-void AudioDecoder::onError(QAudioDecoder::Error errorCode)
-{
-    const QString error = _audioDecoder->errorString();
-
-    qDebug() << error;
 }
 
 void AudioDecoder::releaseAudioBuffer()

@@ -67,6 +67,12 @@
     <ClCompile Include="frontend\videowidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="backend\models\wavfile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="backend\utilities\helpers\wavfilereader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="app.h">
@@ -96,6 +102,12 @@
     <QtMoc Include="frontend\videowidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="backend\models\wavfile.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="backend\utilities\helpers\wavfilereader.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     
@@ -116,6 +128,10 @@
     <CustomBuild Include="release\moc_predefs.h.cbt">
       <Filter>Generated Files</Filter>
     </CustomBuild>
+    
+    
+    
+    
     
     
     <ClInclude Include="ui_mainwindow.h">

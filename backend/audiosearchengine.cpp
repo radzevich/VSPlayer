@@ -31,41 +31,13 @@ void AudioSearchEngine::startProcessing(const QString &filePath)
 
 void AudioSearchEngine::onAudioDecoded(const QByteArray &audioBuffer)
 {
-    //if (audioBuffer.isValid() && audioBuffer.format().isValid()) {
-    //    qInfo() << "AudioSearchEngine codec:" << audioBuffer.format().codec();
-    //    qInfo() << "AudioSearchEngine byte order:" << audioBuffer.format().byteOrder();
-    //    qInfo() << "AudioSearchEngine sample rate:" << audioBuffer.format().sampleRate();
-    //    qInfo() << "AudioSearchEngine sample size:" << audioBuffer.format().sampleSize();
-    //    qInfo() << "AudioSearchEngine sample type:" << audioBuffer.format().sampleType();
-    //    qInfo() << "AudioSearchEngine channel count:" << audioBuffer.format().channelCount();
-    //    qInfo() << "AudioSearchEngine bytes per frame:" << audioBuffer.format().bytesPerFrame();
-    //    qInfo() << "AudioSearchEngine byte count:" << audioBuffer.byteCount();
-    //    qInfo() << "AudioSearchEngine frame count:" << audioBuffer.frameCount();
-    //    qInfo() << "AudioSearchEngine sample count:" << audioBuffer.sampleCount();
-    //} else {
-    //    qInfo() << "NOT VALID";
-    //}
-
-    QAudioFormat *audioFormat = new QAudioFormat();
-    audioFormat->setSampleRate(44100);
-    audioFormat->setChannelCount(2);
-    audioFormat->setSampleSize(16);
-    audioFormat->setSampleType(QAudioFormat::SignedInt);
-    //audioFormat->setByteOrder(QAudioFormat::LittleEndian);
-    audioFormat->setCodec("audio/pcm");
-
-    int bytesCount = audioBuffer.count();
-    qDebug() << "Duration: " << audioFormat->durationForBytes(bytesCount);
-
-    const qint16 * data16 = reinterpret_cast<const qint16 *>(audioBuffer.constData());
-
-    qDebug() << audioBuffer.count() / 2;
+    qDebug() << "Audio buffer size: " << audioBuffer.count();
 
     FILE *fp;
     fp = fopen("samples.wav", "w");
 
-    int bufferSize = audioBuffer.count() / 2;
-    fwrite(audioBuffer.constData(), sizeof(qint16), audioBuffer.count(), fp);
+    int bufferSize = audioBuffer.count();
+    fwrite(audioBuffer.constData(), sizeof(qint8), audioBuffer.count(), fp);
 
     fflush(fp);
     fclose(fp);

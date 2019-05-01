@@ -7,7 +7,8 @@
 QT       += core gui \
             multimedia \
             multimediawidgets \
-            widgets
+            widgets \
+            concurrent
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -37,6 +38,8 @@ SOURCES += \
     app.cpp \
     backend/exceptions/audiosearchengineexception.cpp \
     backend/audiodecoder.cpp \
+    backend/utilities/helpers/wavfilereader.cpp \
+    backend/models/wavfile.cpp \
     backend/exceptions/audiodecoderexception.cpp
 
 HEADERS += \
@@ -48,6 +51,8 @@ HEADERS += \
     app.h \
     backend/exceptions/audiosearchengineexception.h \
     backend/audiodecoder.h \
+    backend/utilities/helpers/wavfilereader.h \
+    backend/models/wavfile.h \
     backend/exceptions/audiodecoderexception.h
 
 FORMS += \
