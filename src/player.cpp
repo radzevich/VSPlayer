@@ -158,7 +158,7 @@ void Player::addToPlaylist(const QList<QUrl> &urls)
     for (auto &url: urls) {
         if (isValidUrl(url)) {
             _playlist->addMedia(url);
-            _audioSearchEngine->startProcessing(url.toLocalFile());
+            _audioSearchEngine->analyze(url.toLocalFile());
         }
     }
 }

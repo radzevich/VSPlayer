@@ -3,36 +3,42 @@
 #include <QObject>
 #include <QAudioOutput>
 
-AudioSearchEngine::AudioSearchEngine(QObject* pobj) : QObject(pobj)
+AudioSearchEngine::AudioSearchEngine(QObject* pobj)
+    : QObject(pobj)
 {
     _audioDecoder = new AudioDecoder(this);
-
-    connect(_audioDecoder, &AudioDecoder::decoded, this, &AudioSearchEngine::onAudioDecoded);
+    _spectrumAnalyzer = new SpectrumAnalyzer(this);
 }
 
 AudioSearchEngine::~AudioSearchEngine()
 {
 }
 
-void AudioSearchEngine::startProcessing(const QString &filePath) const
+void AudioSearchEngine::analyze(const QString &filePath) const
 {
-    const auto audioFormat = new QAudioFormat();
-    audioFormat->setSampleRate(16000);
-    audioFormat->setChannelCount(2);
-    audioFormat->setSampleSize(16);
-    audioFormat->setSampleType(QAudioFormat::SignedInt);
-    audioFormat->setByteOrder(QAudioFormat::LittleEndian);
-    audioFormat->setCodec("pcm_s16le"); // Not compressed, signed int16, little endian
+    const auto pcmAudioData = _audioDecoder->decode(filePath);
+    const auto frequencySpectra = _spectrumAnalyzer->getFrequencySpectrogram(pcmAudioData->leftChannelData(), 25600, 20);
 
-    _audioDecoder->decode(filePath, *audioFormat);
+    QFile file("frequencies.csv");
+    file.open(QIODevice::WriteOnly);
 
-    delete audioFormat;
-}
+    for (auto spectrum : *frequencySpectra)
+    {
+        for (auto i = 0; i < 512; i++)
+        {
+            file.write(QString::number((*spectrum)[i]).toStdString().c_str());
 
-void AudioSearchEngine::onAudioDecoded(const PcmAudioData *pcmAudioData)
-{
-    const auto sizeL = pcmAudioData->leftChannelData()->count();
-    const auto sizeR = pcmAudioData->rightChannelData()->count();
+            if (i != 511)
+            {
+                file.write(", ");
+            }
+            else
+            {
+                file.write("\n");
+            }
+        }
+    }
 
-    delete pcmAudioData;
+    file.flush();
+    file.close();
 }

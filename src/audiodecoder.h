@@ -13,19 +13,23 @@ public:
     explicit AudioDecoder(QObject* pobj = nullptr);
     virtual ~AudioDecoder();
 
-    void decode(const QString &filePath, const QAudioFormat &audioFormat);
-    void decodeAsync(const QString &filePath, const QAudioFormat &audioFormat);
-
-signals:
-    void decoded(const PcmAudioData *pcmAudioData);
+    const PcmAudioData * decode(const QString &filePath) const;
 
 private:
-    const QString _tempWavFile = "soundfile.wav";
-    const QString _outputLog = "logs/ffmpeg/outputs.txt";
-    const QString _errorLog = "logs/ffmpeg/errors.txt";
+    static const QString TEMP_WAV_FILE;
+    static const QString OUTPUT_LOG;
+    static const QString ERROR_LOG;
 
-    void onDecodingFinished(const PcmAudioData *pcmAudioData);
-    const QString *mediaToAudio(const QString &mediaFilePath, const QAudioFormat &audioFormat) const;
+    static const int CHANNELS_COUNT;
+    static const int SAMPLE_RATE_HZ;
+    static const int SAMPLE_SIZE_BITS;
+    static const QString DEFAULT_CODEC;
+
+    static const qint8 LEFT_CHANNEL;
+    static const qint8 RIGHT_CHANNEL;
+
+    const QString *mediaToAudio(const QString &mediaFilePath) const;
     static const WavData *audioToRawAudioData(const QString *audioFilePath, WavData *wavData);
-    const PcmAudioData *rawAudioDataToPcmByChannels(const WavData *rawAudioData, const QAudioFormat *audioFormat) const;
+    const PcmAudioData *rawAudioDataToPcmByChannels(const WavData *rawAudioData) const;
+    QVector<qint16> *readDataForChannel(const qint16* allChannelsData, quint64 framesCount, qint8 channelNumber) const;
 };

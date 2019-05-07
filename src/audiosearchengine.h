@@ -1,9 +1,8 @@
 #pragma once
 
-#include "audiodecoder.h"
-#include "pcmaudiodata.h"
-
 #include <QObject>
+#include "audiodecoder.h"
+#include "spectrumanalyzer.h"
 
 class AudioSearchEngine : public QObject
 {
@@ -13,13 +12,13 @@ public:
     explicit AudioSearchEngine(QObject* pobj = nullptr);
     virtual ~AudioSearchEngine();
 
-    void startProcessing(const QString &filePath) const;
+    void analyze(const QString &filePath) const;
 
 signals:
     void error(const QString &errorMessage);
 
 private:
-    static void onAudioDecoded(const PcmAudioData *pcmAudioData);
-
+    QString _searchRequest = "";
     AudioDecoder *_audioDecoder = nullptr;
+    SpectrumAnalyzer *_spectrumAnalyzer = nullptr;
 };
