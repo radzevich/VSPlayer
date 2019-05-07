@@ -1,18 +1,15 @@
 #include "audiodecoder.h"
-#include "exceptions/audiodecoderexception.h"
+#include "audiodecoderexception.h"
+#include "backend/utilities/helpers/wavfilereader.h"
+#include "pcmaudiodata.h"
 
 #include <QAudioDeviceInfo>
 #include <QAudioOutput>
+#include <QtConcurrent>
+#include <qendian.h>
 
 AudioDecoder::AudioDecoder(QObject* pobj) : QObject(pobj)
 {
-    _audioDecoder = new QAudioDecoder(this);
-    _audioBuffer = new QByteArray();
-    _device = &QAudioDeviceInfo::defaultOutputDevice();
-
-    connect(_audioDecoder, SIGNAL(bufferReady()), this, SLOT(onAudioBufferReady()));
-    connect(_audioDecoder, SIGNAL(finished()), this, SLOT(onDecodingFinished()));
-    connect(_audioDecoder, SIGNAL(error(QAudioDecoder::Error)), this, SLOT(onError(QAudioDecoder::Error)));
 }
 
 AudioDecoder::~AudioDecoder()
@@ -21,39 +18,98 @@ AudioDecoder::~AudioDecoder()
 
 void AudioDecoder::decode(const QString &filePath, const QAudioFormat &audioFormat)
 {
-    releaseAudioBuffer();
+    WavData wavData;
 
-   // _audioDecoder->setAudioFormat(audioFormat);
-    _audioDecoder->setSourceFilename(filePath);
-    _audioDecoder->start();
+    const auto audioFilePath = mediaToAudio(filePath, audioFormat);
+    const auto rawAudioData = audioToRawAudioData(audioFilePath, &wavData);
+    const auto pcmAudioData = rawAudioDataToPcmByChannels(rawAudioData, &audioFormat);
+
+    onDecodingFinished(pcmAudioData);
 }
 
-void AudioDecoder::onAudioBufferReady()
+const QString *AudioDecoder::mediaToAudio(const QString &mediaFilePath, const QAudioFormat &audioFormat) const
 {
-    if (_audioDecoder->bufferAvailable()) {
-        QAudioBuffer audioBuffer = _audioDecoder->read();
-        qDebug() << "Sample count: " << audioBuffer.sampleCount();
-        qDebug() << "Byte count:" << audioBuffer.sampleCount();
-        _audioBuffer->append(audioBuffer.constData<char>());
-    } else {
-        throw new AudioDecoderException();
+    const auto audioCodec = audioFormat.codec();
+    const auto sampleRate = QString::number(audioFormat.sampleRate());
+    const auto channelsCount = QString::number(audioFormat.channelCount());
+    const auto args = QStringList()
+        << "-y"                         // overwrite output file
+        << "-i"     << mediaFilePath    // input file
+        << "-ar"    << sampleRate       // audio sample rate (Hz)
+        << "-ac"    << channelsCount
+        << "-c:a"   << audioCodec
+        << "-vn"    << _tempWavFile;    // output file
+
+    QProcess process;
+    process.setStandardErrorFile("logs/ffmpeg/errors.txt");
+    process.setStandardOutputFile("logs/ffmpeg/output.txt");
+    process.start("ffmpeg", args);
+    process.waitForFinished();
+
+    const auto exitStatus = process.exitStatus();
+
+    process.kill();
+
+    if (exitStatus == QProcess::ExitStatus::CrashExit)
+    {
+        throw AudioDecoderException("Error converting media file to .wav file");
     }
+
+    return &_tempWavFile;
 }
 
-void AudioDecoder::onDecodingFinished()
+const WavData *AudioDecoder::audioToRawAudioData(const QString *audioFilePath, WavData *wavData)
 {
-    emit decoded(*_audioBuffer);
+    const WavFileReader wavFileReader(*audioFilePath);
+    wavFileReader.readWavData(wavData, true);
+
+    return wavData;
 }
 
-void AudioDecoder::onError(QAudioDecoder::Error errorCode)
+const PcmAudioData *AudioDecoder::rawAudioDataToPcmByChannels(
+    const WavData *rawAudioData,
+    const QAudioFormat *audioFormat) const
 {
-    const QString error = _audioDecoder->errorString();
+    auto pcmAudioData = new PcmAudioData();
 
-    qDebug() << error;
+    const auto audioBuffer = rawAudioData->audioBuffer();
+    const auto audioData = const_cast<qint16 *>(reinterpret_cast<const qint16 *>(audioBuffer->constData()));
+
+    const auto sampleSize = audioFormat->sampleSize();
+    const auto audioBufferSize = audioBuffer->count();
+    const quint64 samplesCount = static_cast<double>(audioBufferSize) / sampleSize * 8;
+
+    const auto channelsCount = audioFormat->channelCount();
+    const auto framesCount = samplesCount / audioFormat->channelCount();
+
+    for (auto channelNumber = 0; channelNumber < channelsCount; channelNumber++) {
+        auto channelData = new QVector<qint16>(framesCount);
+
+        for (quint64 frameNumber = 0; frameNumber < framesCount; frameNumber++) {
+            const qint64 sampleNumber = frameNumber * channelsCount + channelNumber;
+            const auto sample = qFromLittleEndian(audioData[sampleNumber]);
+
+            channelData->append(sample);
+        }
+
+        if (channelNumber == 0) {
+            pcmAudioData->setLeftChannelData(channelData);
+        }
+        else {
+            pcmAudioData->setRightChannelData(channelData);
+        }
+    }
+
+    return pcmAudioData;
 }
 
-void AudioDecoder::releaseAudioBuffer()
+void AudioDecoder::decodeAsync(const QString &filePath, const QAudioFormat &audioFormat)
 {
-    _audioBuffer->clear();
+//    QFuture<void> future = QtConcurrent::run(this, &decode, filePath, audioFormat);
+    decode(filePath, audioFormat);
 }
 
+void AudioDecoder::onDecodingFinished(const PcmAudioData *pcmAudioData)
+{
+    emit decoded(pcmAudioData);
+}

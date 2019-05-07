@@ -1,17 +1,11 @@
-#ifndef AUDIODECODER_H
-#define AUDIODECODER_H
+#pragma once
 
 #include <QObject>
-#include <QAudioDecoder>
 #include <QAudioDeviceInfo>
+#include "pcmaudiodata.h"
+#include "models/wavdata.h"
 
-struct AudioSamples
-{
-    uint samplesCount;
-    const quint16* buffer;
-};
-
-class AudioDecoder : public QObject
+class AudioDecoder final : public QObject
 {
     Q_OBJECT
 
@@ -19,22 +13,19 @@ public:
     explicit AudioDecoder(QObject* pobj = nullptr);
     virtual ~AudioDecoder();
 
-    void AudioDecoder::decode(const QString &filePath, const QAudioFormat &audioFormat);
+    void decode(const QString &filePath, const QAudioFormat &audioFormat);
+    void decodeAsync(const QString &filePath, const QAudioFormat &audioFormat);
 
 signals:
-    void decoded(QByteArray &audioBuffer);
-
-private slots:
-    void onAudioBufferReady();
-    void onDecodingFinished();
-    void onError(QAudioDecoder::Error errorCode);
+    void decoded(const PcmAudioData *pcmAudioData);
 
 private:
-    QAudioDecoder *_audioDecoder = nullptr;
-    QByteArray *_audioBuffer = nullptr;
-    QAudioDeviceInfo *_device = nullptr;
+    const QString _tempWavFile = "soundfile.wav";
+    const QString _outputLog = "logs/ffmpeg/outputs.txt";
+    const QString _errorLog = "logs/ffmpeg/errors.txt";
 
-    void releaseAudioBuffer();
+    void onDecodingFinished(const PcmAudioData *pcmAudioData);
+    const QString *mediaToAudio(const QString &mediaFilePath, const QAudioFormat &audioFormat) const;
+    static const WavData *audioToRawAudioData(const QString *audioFilePath, WavData *wavData);
+    const PcmAudioData *rawAudioDataToPcmByChannels(const WavData *rawAudioData, const QAudioFormat *audioFormat) const;
 };
-
-#endif // AUDIODECODER_H

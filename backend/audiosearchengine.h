@@ -1,7 +1,7 @@
-#ifndef AUDIOSEARCHENGINE_H
-#define AUDIOSEARCHENGINE_H
+#pragma once
 
 #include "audiodecoder.h"
+#include "pcmaudiodata.h"
 
 #include <QObject>
 
@@ -13,15 +13,13 @@ public:
     explicit AudioSearchEngine(QObject* pobj = nullptr);
     virtual ~AudioSearchEngine();
 
-    void startProcessing(const QString &filePath);
+    void startProcessing(const QString &filePath) const;
 
 signals:
     void error(const QString &errorMessage);
 
 private:
-    void onAudioDecoded(const QByteArray &audioBuffer);
+    static void onAudioDecoded(const PcmAudioData *pcmAudioData);
 
     AudioDecoder *_audioDecoder = nullptr;
 };
-
-#endif // AUDIOSEARCHENGINE_H
