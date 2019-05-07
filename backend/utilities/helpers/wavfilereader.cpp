@@ -1,8 +1,9 @@
 #include "backend/utilities/helpers/wavfilereader.h"
-#include "backend/models/wavfile.h"
+#include "filereaderexception.h"
 
 #include <qfile.h>
 #include <qendian.h>
+#include "backend/models/wavdata.h"
 
 struct ChunkDescriptor
 {
@@ -37,91 +38,84 @@ struct DataHeader
     ChunkDescriptor descriptor;
 };
 
-WavFileReader::WavFileReader(QObject *parent)
+WavFileReader::WavFileReader(const QString &filePath, QObject *parent)
     : QObject(parent)
 {
+    _file = new QFile(filePath);
 }
 
 WavFileReader::~WavFileReader()
 {
+    _file->close();
+    delete _file;
 }
 
-const WavFile *WavFileReader::readFile(const QString &filePath)
+void WavFileReader::readWavData(WavData* rawAudioData, const bool removeWavFileAfterReading) const
 {
-    WavFile wavFile(this);
+    try {
+        openFile();
+        readFile(rawAudioData);
+        closeFile();
 
-    QFile file(filePath);
-    if (!file.open(QIODevice::ReadOnly)) {
-        onError("Error opening the .wav file");
-        return &wavFile;
+        if (removeWavFileAfterReading) {
+            removeFile();
+        }
     }
-
-    if (!readByChunk(file, wavFile)) {
-        onError("Error readin the .wav file");
-        return &wavFile;
+    catch (FileReaderException &ex) {
+        throw ex;
     }
-
-    wavFile.setIsValid(true);
-
-    return &wavFile;
+    catch (std::exception &ex) {
+        throw FileReaderException(ex.what());
+    }
+    catch (...) {
+        throw FileReaderException("Unhandled exception");
+    }
 }
 
-bool WavFileReader::readByChunk(QFile &file, WavFile &wavFile)
+void WavFileReader::readFile(WavData *rawAudioData) const
 {
-    QAudioFormat *audioFormat = wavFile.getAudioFormat();
-    QByteArray *audioBuffer = wavFile.getAudioBuffer();
+    const auto audioFormat = rawAudioData->audioFormat();
+    const auto audioBuffer = rawAudioData->audioBuffer();
 
-    quint64 filePos = file.pos();
-    file.seek(0);
-
-    bool isValid = true;
-    bool canRead = true;
-
-    while (canRead && isValid) {
+    auto canRead = true;
+    while (canRead) {
         char descriptorId[4];
 
-        quint64 pos = file.pos();
+        quint64 pos = _file->pos();
 
-        if (!file.peek(descriptorId, sizeof(descriptorId)) == sizeof(descriptorId)) {
-            onError("Error reading chunk descriptor id of .wav file");
-            return false;
+        if (_file->peek(descriptorId, sizeof(descriptorId)) != sizeof(descriptorId)) {
+            throw FileReaderException("Error reading chunk descriptor id of .wav file");
         }
 
         if (memcmp(descriptorId, "RIFF", 4) == 0) {
-            isValid = readRiffChunk(file, audioFormat);
+            readRiffChunk(audioFormat);
         }
         else if (memcmp(descriptorId, "RIFX", 4) == 0) {
-            isValid = readRiffChunk(file, audioFormat);
+            readRiffChunk(audioFormat);
         }
         else if (memcmp(descriptorId, "fmt ", 4) == 0) {
-            isValid = readFmtChunk(file, audioFormat);
+            readFmtChunk(audioFormat);
         }
         else if (memcmp(descriptorId, "LIST", 4) == 0) {
-            isValid = readListHeader(file);
+            readListHeader();
         }
         else if (memcmp(descriptorId, "data", 4) == 0) {
-            isValid = readDataChunk(file, audioBuffer);
+            readDataChunk(audioBuffer);
             canRead = false;
         }
     }
-
-    file.seek(filePos);
-
-    return isValid;
 }
 
-bool WavFileReader::readRiffChunk(QFile &file, QAudioFormat *audioFormat)
+void WavFileReader::readRiffChunk(QAudioFormat *audioFormat) const
 {
-    RiffHeader riffHeader;
+    RiffHeader riffHeader{};
 
-    if (file.read(reinterpret_cast<char *>(&riffHeader), sizeof(RiffHeader)) != sizeof(RiffHeader)) {
-        onError("Error reading RIFF chunk of .wav file");
-        return false;
+    if (_file->read(reinterpret_cast<char *>(&riffHeader), sizeof(RiffHeader)) != sizeof(RiffHeader)) {
+        throw FileReaderException("Error reading RIFF chunk of .wav file");
     }
 
     if (memcmp(riffHeader.type, "WAVE", 4) != 0) {
-        onError("'WAVE' file format expected");
-        return false;
+        throw FileReaderException("'WAVE' file format expected");
     }
 
     if (memcmp(&riffHeader.descriptor.id, "RIFF", 4) == 0) {
@@ -130,101 +124,99 @@ bool WavFileReader::readRiffChunk(QFile &file, QAudioFormat *audioFormat)
     else {
         audioFormat->setByteOrder(QAudioFormat::BigEndian);
     }
-
-    return true;
 }
 
-bool WavFileReader::readFmtChunk(QFile &file, QAudioFormat *audioFormat)
+void WavFileReader::readFmtChunk(QAudioFormat *audioFormat) const
 {
-    FmtHeader fmtHeader;
+    FmtHeader fmtHeader{};
 
-    if (file.read(reinterpret_cast<char *>(&fmtHeader), sizeof(FmtHeader)) != sizeof(FmtHeader)) {
-        onError("Error reading fmt chunk of .wav file");
-        return false;
+    if (_file->read(reinterpret_cast<char *>(&fmtHeader), sizeof(FmtHeader)) != sizeof(FmtHeader)) {
+        throw FileReaderException("Error reading fmt chunk of .wav file");
     }
 
-    quint16 waveFormat = qFromLittleEndian<quint16>(fmtHeader.waveFormat);
+    const auto waveFormat = qFromLittleEndian<quint16>(fmtHeader.waveFormat);
     if (waveFormat != 1 && waveFormat != 0) {
-        onError("Unexpected audio format of .wav file: ");
-        return false;
+        throw FileReaderException("Unexpected audio format of .wav file: ");
     }
 
     if (qFromLittleEndian<quint32>(fmtHeader.descriptor.size) > sizeof(FmtHeader)) {
         // Extended data available
         quint16 extraFormatBytes;
-        if (file.peek((char*)&extraFormatBytes, sizeof(quint16)) != sizeof(quint16)) {
-            onError("Error peeking extended data");
-            return false;
+        if (_file->peek(reinterpret_cast<char*>(&extraFormatBytes), sizeof(quint16)) != sizeof(quint16)) {
+            throw FileReaderException("Error peeking extended data");
         }
 
         const qint64 throwAwayBytes = sizeof(quint16) + qFromLittleEndian<quint16>(extraFormatBytes);
-        if (file.read(throwAwayBytes).size() != throwAwayBytes) {
-            onError("Error reading extended data");
-            return false;
+        if (_file->read(throwAwayBytes).size() != throwAwayBytes) {
+            throw FileReaderException("Error reading extended data");
         }
     }
 
-    int bps = qFromLittleEndian<quint16>(fmtHeader.bitsPerSample);
+    const int bps = qFromLittleEndian<quint16>(fmtHeader.bitsPerSample);
     audioFormat->setChannelCount(qFromLittleEndian<quint16>(fmtHeader.numChannels));
     audioFormat->setCodec("audio/pcm");
     audioFormat->setSampleRate(qFromLittleEndian<quint32>(fmtHeader.sampleRate));
     audioFormat->setSampleSize(qFromLittleEndian<quint16>(fmtHeader.bitsPerSample));
     audioFormat->setSampleType(bps == 8 ? QAudioFormat::UnSignedInt : QAudioFormat::SignedInt);
-
-    return true;
 }
 
-bool WavFileReader::readListHeader(QFile &file)
+void WavFileReader::readListHeader() const
 {
-    ListHeader listHeader;
+    ListHeader listHeader{};
 
-    if (file.read(reinterpret_cast<char *>(&listHeader), sizeof(ListHeader)) != sizeof(ListHeader)) {
-        onError("Error reading LIST chunk of .wav file");
-        return false;
+    if (_file->read(reinterpret_cast<char *>(&listHeader), sizeof(ListHeader)) != sizeof(ListHeader)) {
+        throw FileReaderException("Error reading LIST chunk of .wav file");
     }
 
-    quint32 listHeaderSize = qFromLittleEndian<quint32>(listHeader.descriptor.size);
-    quint64 offset = file.pos() + listHeaderSize;
+    const auto listHeaderSize = qFromLittleEndian<quint32>(listHeader.descriptor.size);
+    const quint64 offset = _file->pos() + listHeaderSize;
 
-    if (!file.seek(offset)) {
-        onError("Error seeking LIST chunk of .wav file");
-        return false;
+    if (!_file->seek(offset)) {
+        throw FileReaderException("Error seeking LIST chunk of .wav file");
     }
-
-    return true;
 }
 
-bool WavFileReader::readDataChunk(QFile &file, QByteArray *audioBuffer)
+void WavFileReader::readDataChunk(QByteArray *audioBuffer) const
 {
-    DataHeader dataHeader;
-    if (file.read(reinterpret_cast<char *>(&dataHeader), sizeof(DataHeader)) != sizeof(DataHeader)) {
-        onError("Error reading DATA chunk of .wav file");
-        return false;
+    DataHeader dataHeader{};
+    if (_file->read(reinterpret_cast<char *>(&dataHeader), sizeof(DataHeader)) != sizeof(DataHeader)) {
+        throw FileReaderException("Error reading DATA chunk of .wav file");
     }
 
     audioBuffer->clear();
-    audioBuffer->append(file.readAll());
+    audioBuffer->append(_file->readAll());
 
-    if (audioBuffer->count() != qFromLittleEndian(dataHeader.descriptor.size)) {
-        onError("Error reading audio data from .wav file");
-        return false;
+    if (static_cast<uint>(audioBuffer->count()) != qFromLittleEndian(dataHeader.descriptor.size)) {
+        throw FileReaderException("Error reading audio data from .wav file");
     }
-
-    return true;
 }
 
-//template<typename T>
-//T WavFileReader::readChunkHeader<T>()
-//{
-//    T dataHeader;
-//    if (file.read(reinterpret_cast<char *>(&dataHeader), sizeof(T)) != sizeof(T)) {
-//        onError("Error reading chunk of .wav file");
-//    }
-//
-//    return dataHeader;
-//}
-
-void WavFileReader::onError(const QString &errorMessage)
+void WavFileReader::openFile() const
 {
-    //QDebug << errorMessage.toStdString().c_str();
+    if (_file->isOpen()) {
+        _file->close();
+    }
+
+    if (!_file->exists()) {
+        throw FileReaderException(".wav file not found");
+    }
+
+    if (!_file->open(QIODevice::ReadOnly)) {
+        throw FileReaderException("Error opening the .wav file");
+    }
+}
+
+void WavFileReader::closeFile() const
+{
+    _file->close();
+}
+
+void WavFileReader::removeFile() const
+{
+    if (_file->exists())
+    {
+        if (!_file->remove()) {
+            throw FileReaderException("Error removing the .wav file");
+        };
+    }
 }

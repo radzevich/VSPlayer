@@ -35,15 +35,33 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Source Files\backend">
+      <UniqueIdentifier>{685ac917-a70d-4067-8932-cc84e12d0a6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\backend\exceptions">
+      <UniqueIdentifier>{96a4b970-eff4-4f1d-9bdf-e85d2ae71dd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\backend">
+      <UniqueIdentifier>{b9b66156-93c3-44e0-8560-7d2e936f5eff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\backend\exceptions">
+      <UniqueIdentifier>{5402640e-59be-49b2-8fca-685da7b51dca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\backend\tools">
+      <UniqueIdentifier>{d0e730f8-0ee0-4768-9ffd-19a34e7810ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\backend\tools">
+      <UniqueIdentifier>{dc8a6d24-d101-4c87-bf5e-8935a4daa22f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\backend\models">
+      <UniqueIdentifier>{7017a7ac-5c35-44a7-97cb-2061ce5c7104}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\backend\models">
+      <UniqueIdentifier>{d3dea8c4-d8dc-4643-9b09-fcc399d624b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="app.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="backend\audiodecoder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="backend\exceptions\audiodecoderexception.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="backend\audiosearchengine.cpp">
@@ -67,23 +85,26 @@
     <ClCompile Include="frontend\videowidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="backend\models\wavfile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="backend\utilities\helpers\wavfilereader.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="baseexception.cpp">
+      <Filter>Source Files\backend\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="backend\audiodecoder.cpp">
+      <Filter>Source Files\backend\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="pcmaudiodata.cpp">
+      <Filter>Source Files\backend\models</Filter>
+    </ClCompile>
+    <ClCompile Include="backend\models\wavdata.cpp">
+      <Filter>Source Files\backend\models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="app.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="backend\audiodecoder.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <ClInclude Include="backend\exceptions\audiodecoderexception.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <QtMoc Include="backend\audiosearchengine.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -102,38 +123,26 @@
     <QtMoc Include="frontend\videowidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="backend\models\wavfile.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="backend\utilities\helpers\wavfilereader.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="backend\audiodecoder.h">
+      <Filter>Header Files\backend\tools</Filter>
+    </QtMoc>
+    <QtMoc Include="pcmaudiodata.h">
+      <Filter>Header Files\backend\models</Filter>
+    </QtMoc>
+    <QtMoc Include="backend\models\wavdata.h">
+      <Filter>Header Files\backend\models</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <CustomBuild Include="debug\moc_predefs.h.cbt">
       <Filter>Generated Files</Filter>
     </CustomBuild>
     <CustomBuild Include="release\moc_predefs.h.cbt">
       <Filter>Generated Files</Filter>
     </CustomBuild>
-    
-    
-    
-    
-    
-    
     <ClInclude Include="ui_mainwindow.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
@@ -142,5 +151,19 @@
     <QtUic Include="frontend\mainwindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="filereaderexception.h">
+      <Filter>Header Files\backend\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="baseexception.h">
+      <Filter>Header Files\backend\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="audiodecoderexception.h">
+      <Filter>Header Files\backend\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="muxexception.h">
+      <Filter>Header Files\backend\exceptions</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

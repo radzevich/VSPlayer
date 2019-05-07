@@ -1,26 +1,28 @@
 #pragma once
 
 #include <QObject>
-#include "backend/models/wavfile.h"
+#include <QFileInfo>
+#include "backend/models/wavdata.h"
 
 class WavFileReader : public QObject
 {
     Q_OBJECT
 
 public:
-    WavFileReader(QObject *parent);
+    explicit WavFileReader(const QString &filePath, QObject *parent = nullptr);
     ~WavFileReader();
 
-    const WavFile *readFile(const QString &filePath);
+    void readWavData(WavData* rawAudioData, bool removeWavFileAfterReading = false) const;
 
 private:
-    //template <typename T> T readChunkHeader();
+    QFile *_file = nullptr;
 
-    bool readByChunk(QFile &file, WavFile &wavFile);
-    bool readRiffChunk(QFile &file, QAudioFormat *audioFormat);
-    bool readFmtChunk(QFile &file, QAudioFormat *audioFormat);
-    bool readListHeader(QFile &file);
-    bool readDataChunk(QFile &file, QByteArray *audioBuffer);
-
-    void onError(const QString &errorMessage);
+    void closeFile() const;
+    void openFile() const;
+    void readFile(WavData *rawAudioData) const;
+    void readRiffChunk(QAudioFormat *audioFormat) const;
+    void readFmtChunk(QAudioFormat *audioFormat) const;
+    void readListHeader() const;
+    void readDataChunk(QByteArray *audioBuffer) const;
+    void removeFile() const;
 };

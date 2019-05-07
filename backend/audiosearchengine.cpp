@@ -1,9 +1,7 @@
 #include "audiosearchengine.h"
 
-#include <cstdio>
 #include <QObject>
 #include <QAudioOutput>
-#include <QIODevice>
 
 AudioSearchEngine::AudioSearchEngine(QObject* pobj) : QObject(pobj)
 {
@@ -16,29 +14,25 @@ AudioSearchEngine::~AudioSearchEngine()
 {
 }
 
-void AudioSearchEngine::startProcessing(const QString &filePath)
+void AudioSearchEngine::startProcessing(const QString &filePath) const
 {
-    QAudioFormat *audioFormat = new QAudioFormat();
-    audioFormat->setSampleRate(44800);
-    audioFormat->setChannelCount(1);
+    const auto audioFormat = new QAudioFormat();
+    audioFormat->setSampleRate(16000);
+    audioFormat->setChannelCount(2);
     audioFormat->setSampleSize(16);
     audioFormat->setSampleType(QAudioFormat::SignedInt);
-    //audioFormat->setByteOrder(QAudioFormat::LittleEndian);
-    audioFormat->setCodec("audio/pcm");
+    audioFormat->setByteOrder(QAudioFormat::LittleEndian);
+    audioFormat->setCodec("pcm_s16le"); // Not compressed, signed int16, little endian
 
     _audioDecoder->decode(filePath, *audioFormat);
+
+    delete audioFormat;
 }
 
-void AudioSearchEngine::onAudioDecoded(const QByteArray &audioBuffer)
+void AudioSearchEngine::onAudioDecoded(const PcmAudioData *pcmAudioData)
 {
-    qDebug() << "Audio buffer size: " << audioBuffer.count();
+    const auto sizeL = pcmAudioData->leftChannelData()->count();
+    const auto sizeR = pcmAudioData->rightChannelData()->count();
 
-    FILE *fp;
-    fp = fopen("samples.wav", "w");
-
-    int bufferSize = audioBuffer.count();
-    fwrite(audioBuffer.constData(), sizeof(qint8), audioBuffer.count(), fp);
-
-    fflush(fp);
-    fclose(fp);
+    delete pcmAudioData;
 }
