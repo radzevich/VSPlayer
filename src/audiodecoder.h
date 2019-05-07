@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QAudioDeviceInfo>
 #include "pcmaudiodata.h"
-#include "models/wavdata.h"
+#include "wavdata.h"
 
 class AudioDecoder final : public QObject
 {

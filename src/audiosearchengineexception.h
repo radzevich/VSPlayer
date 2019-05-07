@@ -2,7 +2,7 @@
 
 #include "baseexception.h"
 
-class MuxException : public BaseException
+class AudioSearchEngineException : public BaseException
 {
     using BaseException::BaseException;
 };

@@ -182,44 +182,39 @@
     </QtUic>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="app.cpp" />
-    <ClCompile Include="backend\audiodecoder.cpp" />
-    <ClCompile Include="backend\audiosearchengine.cpp" />
-    <ClCompile Include="backend\exceptions\audiosearchengineexception.cpp" />
-    <ClCompile Include="baseexception.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="frontend\player.cpp" />
-    <ClCompile Include="frontend\playercontrols.cpp" />
-    <ClCompile Include="frontend\playlistmodel.cpp" />
-    <ClCompile Include="frontend\videowidget.cpp" />
-    <ClCompile Include="backend\models\wavdata.cpp" />
-    <ClCompile Include="backend\utilities\helpers\wavfilereader.cpp" />
-    <ClCompile Include="pcmaudiodata.cpp" />
+    <ClCompile Include="src/app.cpp" />
+    <ClCompile Include="src/audiodecoder.cpp" />
+    <ClCompile Include="src/audiosearchengine.cpp" />
+    <ClCompile Include="src/baseexception.cpp" />
+    <ClCompile Include="src/main.cpp" />
+    <ClCompile Include="src/player.cpp" />
+    <ClCompile Include="src/playercontrols.cpp" />
+    <ClCompile Include="src/playlistmodel.cpp" />
+    <ClCompile Include="src/videowidget.cpp" />
+    <ClCompile Include="src/wavdata.cpp" />
+    <ClCompile Include="src/wavfilereader.cpp" />
+    <ClCompile Include="src/pcmaudiodata.cpp" />
+    <ClInclude Include="src/audiodecoderexception.h" />
+    <ClInclude Include="src/audiosearchengineexception.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="app.h">
+    <QtMoc Include="src/app.h">
     </QtMoc>
-    <QtMoc Include="backend\audiodecoder.h">
+    <QtMoc Include="src/audiodecoder.h">
     </QtMoc>
-    <ClInclude Include="audiodecoderexception.h" />
-    <QtMoc Include="backend\audiosearchengine.h">
+    <QtMoc Include="src/audiosearchengine.h">
     </QtMoc>
-    <ClInclude Include="backend\exceptions\audiosearchengineexception.h" />
-    <QtMoc Include="frontend\player.h">
+    <QtMoc Include="src/player.h">
     </QtMoc>
-    <QtMoc Include="frontend\playercontrols.h">
+    <QtMoc Include="src/playercontrols.h">
     </QtMoc>
-    <QtMoc Include="frontend\playlistmodel.h">
+    <QtMoc Include="src/playlistmodel.h">
     </QtMoc>
-    <QtMoc Include="frontend\videowidget.h">
+    <QtMoc Include="src/videowidget.h">
     </QtMoc>
-    <QtMoc Include="backend\models\wavdata.h">
-      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtMultimediaWidgets;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;.\debug;$(QTDIR)\mkspecs\win32-msvc</IncludePath>
-      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_WINDOWS;UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_MULTIMEDIAWIDGETS_LIB;QT_MULTIMEDIA_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</Define>
-      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtMultimediaWidgets;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;.\release;$(QTDIR)\mkspecs\win32-msvc</IncludePath>
-      <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">_WINDOWS;UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_NO_DEBUG;QT_MULTIMEDIAWIDGETS_LIB;QT_MULTIMEDIA_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;NDEBUG;%(PreprocessorDefinitions)</Define>
+    <QtMoc Include="src/wavdata.h">
     </QtMoc>
-    <QtMoc Include="backend\utilities\helpers\wavfilereader.h">
+    <QtMoc Include="src/wavfilereader.h">
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -239,20 +234,19 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">release\moc_predefs.h;%(Outputs)</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </CustomBuild>
-    <ClInclude Include="baseexception.h">
+    <ClInclude Include="src/baseexception.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtMultimediaWidgets;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;.\debug;$(QTDIR)\mkspecs\win32-msvc</IncludePath>
       <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_WINDOWS;UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_MULTIMEDIAWIDGETS_LIB;QT_MULTIMEDIA_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</Define>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtMultimediaWidgets;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;.\release;$(QTDIR)\mkspecs\win32-msvc</IncludePath>
       <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">_WINDOWS;UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_NO_DEBUG;QT_MULTIMEDIAWIDGETS_LIB;QT_MULTIMEDIA_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;NDEBUG;%(PreprocessorDefinitions)</Define>
     </ClInclude>
-    <ClInclude Include="filereaderexception.h">
+    <ClInclude Include="src/filereaderexception.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtMultimediaWidgets;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;.\debug;$(QTDIR)\mkspecs\win32-msvc</IncludePath>
       <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_WINDOWS;UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_MULTIMEDIAWIDGETS_LIB;QT_MULTIMEDIA_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</Define>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtMultimediaWidgets;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;.\release;$(QTDIR)\mkspecs\win32-msvc</IncludePath>
       <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">_WINDOWS;UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_NO_DEBUG;QT_MULTIMEDIAWIDGETS_LIB;QT_MULTIMEDIA_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;NDEBUG;%(PreprocessorDefinitions)</Define>
     </ClInclude>
-    <ClInclude Include="muxexception.h" />
-    <QtMoc Include="pcmaudiodata.h">
+    <QtMoc Include="src/pcmaudiodata.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtMultimediaWidgets;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;.\debug;$(QTDIR)\mkspecs\win32-msvc</IncludePath>
       <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_WINDOWS;UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_MULTIMEDIAWIDGETS_LIB;QT_MULTIMEDIA_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</Define>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtMultimediaWidgets;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;.\release;$(QTDIR)\mkspecs\win32-msvc</IncludePath>
@@ -261,7 +255,7 @@
     <ClInclude Include="ui_mainwindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="frontend\mainwindow.ui">
+    <QtUic Include="src/mainwindow.ui">
     </QtUic>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

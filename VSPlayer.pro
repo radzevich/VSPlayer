@@ -29,34 +29,34 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-    main.cpp \
-    frontend/videowidget.cpp \
-    frontend/player.cpp \
-    frontend/playercontrols.cpp \
-    frontend/playlistmodel.cpp \
-    backend/audiosearchengine.cpp \
-    app.cpp \
-    backend/exceptions/audiosearchengineexception.cpp \
-    backend/audiodecoder.cpp \
-    backend/utilities/helpers/wavfilereader.cpp \
-    backend/models/wavfile.cpp \
-    backend/exceptions/audiodecoderexception.cpp
+    src/main.cpp \
+    src/videowidget.cpp \
+    src/player.cpp \
+    src/playercontrols.cpp \
+    src/playlistmodel.cpp \
+    src/audiosearchengine.cpp \
+    src/app.cpp \
+    src/audiosearchengineexception.cpp \
+    src/audiodecoder.cpp \
+    src/wavfilereader.cpp \
+    src/wavfile.cpp \
+    src/audiodecoderexception.cpp
 
 HEADERS += \
-    frontend/videowidget.h \
-    frontend/player.h \
-    frontend/playercontrols.h \
-    frontend/playlistmodel.h \
-    backend/audiosearchengine.h \
-    app.h \
-    backend/exceptions/audiosearchengineexception.h \
-    backend/audiodecoder.h \
-    backend/utilities/helpers/wavfilereader.h \
-    backend/models/wavfile.h \
-    backend/exceptions/audiodecoderexception.h
+    src/videowidget.h \
+    src/player.h \
+    src/playercontrols.h \
+    src/playlistmodel.h \
+    src/audiosearchengine.h \
+    src/app.h \
+    src/audiosearchengineexception.h \
+    src/audiodecoder.h \
+    src/wavfilereader.h \
+    src/wavfile.h \
+    src/audiodecoderexception.h
 
 FORMS += \
-    frontend/mainwindow.ui
+    src/mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

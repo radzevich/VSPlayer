@@ -1,4 +1,4 @@
-#include "backend/models/wavdata.h"
+#include "wavdata.h"
 #include <qaudioformat.h>
 
 WavData::WavData(QObject *parent)

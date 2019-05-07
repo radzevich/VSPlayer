@@ -1,8 +1,6 @@
 #include "playercontrols.h"
 
 #include <QBoxLayout>
-#include <QSlider>
-#include <QStyle>
 #include <QToolButton>
 #include <QComboBox>
 #include <QAudio>

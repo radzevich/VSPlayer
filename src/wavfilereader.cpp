@@ -1,9 +1,9 @@
-#include "backend/utilities/helpers/wavfilereader.h"
-#include "filereaderexception.h"
+#include "wavfilereader.h"
 
 #include <qfile.h>
 #include <qendian.h>
-#include "backend/models/wavdata.h"
+#include "wavdata.h"
+#include "filereaderexception.h"
 
 struct ChunkDescriptor
 {

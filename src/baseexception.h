@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QException>
-#include <QString>
 
 class BaseException : public QException
 {
