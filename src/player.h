@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
-#include "../backend/audiosearchengine.h"
+#include "audiosearchengine.h"
 
 QT_BEGIN_NAMESPACE
 class QAbstractItemView;

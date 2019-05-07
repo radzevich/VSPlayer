@@ -1,6 +1,6 @@
 #include "audiodecoder.h"
 #include "audiodecoderexception.h"
-#include "backend/utilities/helpers/wavfilereader.h"
+#include "wavfilereader.h"
 #include "pcmaudiodata.h"
 
 #include <QAudioDeviceInfo>

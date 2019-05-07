@@ -1,6 +1,6 @@
 #include "app.h"
-#include "frontend/player.h"
-#include "backend/audiosearchengine.h"
+#include "player.h"
+#include "audiosearchengine.h"
 
 #include <QCommandLineParser>
 #include <QCommandLineOption>

@@ -8,7 +8,7 @@
 #include <QMediaPlaylist>
 #include <QMediaMetaData>
 #include <QtWidgets>
-#include "../backend/audiosearchengine.h"
+#include "audiosearchengine.h"
 
 Player::Player(QWidget *parent)
     : QWidget(parent)

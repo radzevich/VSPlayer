@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <QFileInfo>
-#include "backend/models/wavdata.h"
+#include "wavdata.h"
 
 class WavFileReader : public QObject
 {
