@@ -47,12 +47,6 @@
     <Filter Include="Header Files\backend\exceptions">
       <UniqueIdentifier>{5402640e-59be-49b2-8fca-685da7b51dca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\backend\tools">
-      <UniqueIdentifier>{d0e730f8-0ee0-4768-9ffd-19a34e7810ad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\backend\tools">
-      <UniqueIdentifier>{dc8a6d24-d101-4c87-bf5e-8935a4daa22f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\backend\models">
       <UniqueIdentifier>{7017a7ac-5c35-44a7-97cb-2061ce5c7104}</UniqueIdentifier>
     </Filter>
@@ -83,6 +77,12 @@
     <Filter Include="Header Files\backend\utilities\helpers">
       <UniqueIdentifier>{2b54b168-ab7d-4367-9fb3-95df4b032c8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\backend\engine">
+      <UniqueIdentifier>{d0e730f8-0ee0-4768-9ffd-19a34e7810ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\backend\engine">
+      <UniqueIdentifier>{dc8a6d24-d101-4c87-bf5e-8935a4daa22f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src/main.cpp">
@@ -92,7 +92,7 @@
       <Filter>Source Files\backend\exceptions</Filter>
     </ClCompile>
     <ClCompile Include="src/audiodecoder.cpp">
-      <Filter>Source Files\backend\tools</Filter>
+      <Filter>Source Files\backend\engine</Filter>
     </ClCompile>
     <ClCompile Include="src/pcmaudiodata.cpp">
       <Filter>Source Files\backend\models</Filter>
@@ -119,12 +119,15 @@
       <Filter>Source Files\backend\utilities\helpers</Filter>
     </ClCompile>
     <ClCompile Include="src/audiosearchengine.cpp">
-      <Filter>Source Files\backend\tools</Filter>
+      <Filter>Source Files\backend\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\spectrumanalyzer.cpp">
+      <Filter>Source Files\backend\engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src/audiodecoder.h">
-      <Filter>Header Files\backend\tools</Filter>
+      <Filter>Header Files\backend\engine</Filter>
     </QtMoc>
     <QtMoc Include="src/pcmaudiodata.h">
       <Filter>Header Files\backend\models</Filter>
@@ -148,10 +151,13 @@
       <Filter>Header Files\backend\utilities\helpers</Filter>
     </QtMoc>
     <QtMoc Include="src/audiosearchengine.h">
-      <Filter>Header Files\backend\tools</Filter>
+      <Filter>Header Files\backend\engine</Filter>
     </QtMoc>
     <QtMoc Include="src/app.h">
       <Filter>Header Files\frontend\model</Filter>
+    </QtMoc>
+    <QtMoc Include="src\spectrumanalyzer.h">
+      <Filter>Header Files\backend\engine</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -166,7 +172,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="mainwindow.ui">
+    <QtUic Include="src/mainwindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
@@ -178,9 +184,6 @@
       <Filter>Header Files\backend\exceptions</Filter>
     </ClInclude>
     <ClInclude Include="src/audiodecoderexception.h">
-      <Filter>Header Files\backend\exceptions</Filter>
-    </ClInclude>
-    <ClInclude Include="src/muxexception.h">
       <Filter>Header Files\backend\exceptions</Filter>
     </ClInclude>
     <ClInclude Include="src/audiosearchengineexception.h">
