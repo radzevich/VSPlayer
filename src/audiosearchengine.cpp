@@ -24,11 +24,11 @@ void AudioSearchEngine::analyze(const QString &filePath) const
 
     for (auto spectrum : *frequencySpectra)
     {
-        for (auto i = 0; i < 512; i++)
+        for (auto i = 0; i < 160; i++)
         {
             file.write(QString::number((*spectrum)[i]).toStdString().c_str());
 
-            if (i != 511)
+            if (i != 159)
             {
                 file.write(", ");
             }

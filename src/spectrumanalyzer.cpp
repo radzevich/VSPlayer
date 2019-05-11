@@ -13,6 +13,7 @@ SpectrumAnalyzer::~SpectrumAnalyzer()
 {
 }
 
+// TODO: add samplesPerFragment parameter instead of fragmentDurationMs
 const spectrogram *SpectrumAnalyzer::getFrequencySpectrogram(
     const QVector<qint16> *pcmAudioData,
     const quint32 sampleRate,
@@ -31,9 +32,12 @@ const spectrogram *SpectrumAnalyzer::getFrequencySpectrogram(
 
         fastFourierTransform(*complexRepresentation, samplesPerFragment);
 
-        const auto amplitudeSpectra = toAmplitudeSpectra(*complexRepresentation, samplesPerFragment);
-        (*frequencySpectrogram)[i] = amplitudeSpectra;
+        const auto amplitudeSpectrum = toAmplitudeSpectra(*complexRepresentation, samplesPerFragment);
+        const auto energySpectrum = calculateEnergySpectra(amplitudeSpectrum);
 
+        (*frequencySpectrogram)[i] = energySpectrum;
+
+        delete amplitudeSpectrum;
         delete complexRepresentation;
     }
 
@@ -113,8 +117,13 @@ void SpectrumAnalyzer::fastFourierTransform(complex_array &spectra, int n) const
     }
 }
 
-const QVector<float> *SpectrumAnalyzer::toAmplitudeSpectra(complex_array &spectra, const int size) const
+const QVector<float> *SpectrumAnalyzer::toAmplitudeSpectra(complex_array &spectra, int size) const
 {
+    // According to Nyquist–Shannon sampling theorem,
+    // the second half of spectra sequence is a mirror reflection of the first one.
+    // So we can use only the half of data for analysis
+    size = size >> 1;
+
     const auto amplitudeSpectra = new QVector<float>(size);
     for (auto i = 0; i < size; i++)
     {
@@ -126,4 +135,20 @@ const QVector<float> *SpectrumAnalyzer::toAmplitudeSpectra(complex_array &spectr
     }
 
     return amplitudeSpectra;
+}
+
+const QVector<quint16> *SpectrumAnalyzer::calculateEnergySpectra(const QVector<float> *amplitudeSpectrum)
+{
+    const auto energySpectra = new QVector<quint16>(ENERGY_SPECTRA_SIZE, 0);
+
+    for (auto spectrum : *amplitudeSpectrum)
+    {
+        if (spectrum < UPPER_ANALYZED_FREQUENCY)
+        {
+            const quint16 spectrumIntervalIndex = spectrum / FREQUENCY_STEP_HZ;
+            (*energySpectra)[spectrumIntervalIndex]++;
+        }
+    }
+
+    return energySpectra;
 }
